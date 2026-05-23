@@ -12,16 +12,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install lftp
-        run: sudo apt-get install -y lftp
-
-      - name: Deploy via lftp
-        run: |
-          lftp -c "
-            set ftp:passive-mode true;
-            set ssl:verify-certificate false;
-            set ftp:ssl-allow true;
-            open -u markor16,${{ secrets.FTP_PASSWORD }} ftp.freehostia.com;
-            mirror -R --parallel=2 --no-perms --exclude-glob .git/ --exclude-glob .github/ ./ /www/crm-integration.co.il/;
-            quit
-          "
+      - name: Deploy via FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ftps2.us.freehostia.com
+          username: markor16
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          security: loose
+          server-dir: /www/crm-integration.co.il/
+          local-dir: ./
+          exclude: |
+            **/.git*
+            **/.git*/**
+            .github/**
+            README.md
