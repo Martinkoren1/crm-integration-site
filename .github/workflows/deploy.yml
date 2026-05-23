@@ -12,14 +12,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Deploy via FTP
+      - name: Deploy via FTPS
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ftp.freehostia.com
           username: markor16
           password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
           server-dir: /www/crm-integration.co.il/
           local-dir: ./
+          security: loose
           exclude: |
             **/.git*
             **/.git*/**
