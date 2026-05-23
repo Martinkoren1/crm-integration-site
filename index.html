@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CRM Integration | מומחי Microsoft Dynamics 365</title>
+  <meta name="description" content="הטמעת Microsoft Dynamics 365, אינטגרציות, פיתוח על Power Platform ויעוץ מקצועי. לקוחות: אלדן, נובולוג, ביוול, גב מערכות, קופת חולים מאוחדת." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:    #0F2849;
+      --blue:    #0078D4;   /* Microsoft blue */
+      --blue-lt: #2899F5;
+      --accent:  #00BCF2;   /* Microsoft cyan */
+      --bg:      #F3F8FD;
+      --white:   #FFFFFF;
+      --gray50:  #F1F5F9;
+      --gray100: #E2E8F0;
+      --gray400: #94A3B8;
+      --gray700: #334155;
+      --dark:    #0D1B2E;
+      --radius:  12px;
+      --shadow:  0 4px 24px rgba(15,40,73,0.10);
+      --shadow-lg: 0 12px 40px rgba(15,40,73,0.15);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Heebo', sans-serif;
+      background: var(--bg);
+      color: var(--gray700);
+      line-height: 1.6;
+      overflow-x: hidden;
+      direction: rtl;
+      text-align: right;
+    }
+    body.en {
+      font-family: 'Inter', sans-serif;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .container { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+
+    /* Lang bar */
+    .lang-bar { background: var(--navy); padding: 8px 0; }
+    .lang-bar .container { display: flex; justify-content: flex-end; gap: 8px; }
+    .lang-btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.3);
+      color: rgba(255,255,255,0.7);
+      padding: 4px 14px; border-radius: 20px;
+      font-size: 13px; cursor: pointer; font-family: inherit; transition: all 0.2s;
+    }
+    .lang-btn.active, .lang-btn:hover { background: var(--blue); border-color: var(--blue); color: white; }
+
+    /* Nav */
+    nav {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray100);
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--blue), var(--accent));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    /* Microsoft-style 4-square icon */
+    .ms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; width: 20px; height: 20px; }
+    .ms-grid span { border-radius: 2px; }
+    .logo-text { font-size: 17px; font-weight: 700; color: var(--navy); }
+    .logo-text em { color: var(--blue); font-style: normal; }
+    .nav-links { display: flex; list-style: none; gap: 28px; }
+    .nav-links a { text-decoration: none; color: var(--gray700); font-size: 15px; font-weight: 500; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--blue); }
+    .nav-cta { background: var(--blue); color: white !important; padding: 9px 22px; border-radius: 6px; font-weight: 600 !important; }
+    .nav-cta:hover { background: var(--navy) !important; }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(140deg, #062742 0%, #0F3460 55%, #0A2A50 100%);
+      color: white; padding: 90px 0 72px; position: relative; overflow: hidden;
+    }
+    .hero::after {
+      content: '';
+      position: absolute; top: -40%; right: -10%;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(0,188,242,0.10) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; position: relative; z-index: 1; }
+
+    .ms-badge {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: rgba(0,120,212,0.2); border: 1px solid rgba(0,120,212,0.4);
+      color: var(--accent); padding: 7px 18px; border-radius: 4px;
+      font-size: 13px; font-weight: 700; margin-bottom: 22px; letter-spacing: 0.3px;
+    }
+    .ms-badge img { width: 18px; }
+
+    .hero h1 { font-size: clamp(30px, 3.8vw, 50px); font-weight: 800; line-height: 1.15; margin-bottom: 18px; }
+    .hero h1 .hl { color: var(--accent); }
+    .hero p { font-size: 17px; color: rgba(255,255,255,0.78); margin-bottom: 34px; line-height: 1.75; font-weight: 300; }
+    .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    .btn-primary {
+      background: var(--blue); color: white; padding: 13px 30px; border-radius: 6px;
+      text-decoration: none; font-weight: 700; font-size: 15px; transition: all 0.2s;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-primary:hover { background: #005A9E; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,120,212,0.45); }
+    .btn-outline {
+      background: transparent; color: white; padding: 13px 30px; border-radius: 6px;
+      text-decoration: none; font-weight: 600; font-size: 15px; border: 1.5px solid rgba(255,255,255,0.3); transition: all 0.2s;
+    }
+    .btn-outline:hover { border-color: white; background: rgba(255,255,255,0.08); }
+
+    /* Hero visual — D365 modules */
+    .hero-visual { display: flex; justify-content: center; }
+    .d365-card {
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.11);
+      border-radius: 16px; padding: 28px; width: 100%; max-width: 360px;
+      backdrop-filter: blur(10px);
+    }
+    .d365-title { font-size: 11px; color: var(--accent); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 18px; }
+    .d365-module {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 14px; border-radius: 8px; margin-bottom: 8px;
+      border: 1px solid rgba(255,255,255,0.07); transition: background 0.2s;
+      background: rgba(255,255,255,0.04);
+    }
+    .d365-module:hover { background: rgba(255,255,255,0.09); }
+    .mod-icon { font-size: 20px; width: 32px; text-align: center; flex-shrink: 0; }
+    .mod-info strong { display: block; color: white; font-size: 13px; font-weight: 600; }
+    .mod-info span { color: rgba(255,255,255,0.45); font-size: 11px; }
+    .mod-dot { width: 7px; height: 7px; border-radius: 50%; background: #22C55E; box-shadow: 0 0 5px #22C55E; margin-right: auto; flex-shrink: 0; }
+
+    /* Stats */
+    .stats { background: var(--white); border-bottom: 1px solid var(--gray100); padding: 30px 0; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; text-align: center; }
+    .stat-num { font-size: 34px; font-weight: 800; color: var(--navy); }
+    .stat-num em { color: var(--blue); font-style: normal; }
+    .stat-label { font-size: 13px; color: var(--gray400); margin-top: 4px; }
+
+    /* Sections */
+    .section { padding: 76px 0; }
+    .section-header { text-align: center; margin-bottom: 52px; }
+    .section-tag {
+      display: inline-block; background: #EBF5FF; color: var(--blue);
+      font-size: 12px; font-weight: 700; padding: 5px 16px; border-radius: 4px;
+      margin-bottom: 12px; letter-spacing: 0.5px; text-transform: uppercase;
+    }
+    .section-header h2 { font-size: clamp(24px, 3vw, 36px); font-weight: 800; color: var(--navy); margin-bottom: 12px; }
+    .section-header p { font-size: 16px; color: var(--gray400); max-width: 540px; margin: 0 auto; line-height: 1.7; }
+
+    /* Services */
+    .services { background: var(--bg); }
+    .services-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 22px; }
+    .service-card {
+      background: var(--white); border: 1px solid var(--gray100); border-radius: var(--radius);
+      padding: 34px; transition: all 0.3s; position: relative; overflow: hidden;
+    }
+    .service-card::before {
+      content: ''; position: absolute; top: 0; right: 0; left: 0; height: 3px;
+      background: linear-gradient(90deg, var(--blue), var(--accent));
+      transform: scaleX(0); transform-origin: right; transition: transform 0.3s;
+    }
+    .service-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .service-card:hover::before { transform: scaleX(1); }
+    .service-icon { width: 52px; height: 52px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 18px; }
+    .service-card h3 { font-size: 19px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+    .service-card p { color: var(--gray400); font-size: 14px; line-height: 1.7; margin-bottom: 18px; }
+    .service-tags { display: flex; gap: 7px; flex-wrap: wrap; }
+    .tag { background: var(--gray50); color: var(--gray700); font-size: 11px; font-weight: 600; padding: 3px 11px; border-radius: 20px; }
+    .tag-blue { background: #EBF5FF; color: var(--blue); }
+
+    /* Clients */
+    .clients { background: var(--white); }
+    .clients-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 16px; }
+    .client-card {
+      background: var(--bg); border: 1.5px solid var(--gray100); border-radius: 10px;
+      padding: 24px 16px; text-align: center; transition: all 0.25s;
+    }
+    .client-card:hover { border-color: var(--blue); box-shadow: var(--shadow); transform: translateY(-3px); }
+    .client-icon { font-size: 28px; margin-bottom: 10px; display: block; }
+    .client-name { font-size: 14px; font-weight: 700; color: var(--navy); }
+    .client-type { font-size: 11px; color: var(--gray400); margin-top: 4px; }
+
+    .subcontractor-note {
+      display: flex; align-items: flex-start; gap: 14px;
+      background: #EBF5FF; border: 1px solid #BFDBFE; border-radius: 10px;
+      padding: 20px 24px; margin-top: 32px;
+    }
+    .subcontractor-note .icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+    .subcontractor-note p { font-size: 14px; color: #1E40AF; line-height: 1.6; }
+    .subcontractor-note strong { font-weight: 700; }
+
+    /* Why */
+    .why { background: var(--bg); }
+    .why-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 28px; }
+    .why-item { text-align: center; padding: 28px 20px; background: var(--white); border-radius: var(--radius); border: 1px solid var(--gray100); }
+    .why-icon { width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 16px; }
+    .why-item h3 { font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+    .why-item p { color: var(--gray400); font-size: 14px; line-height: 1.7; }
+
+    /* Stack */
+    .stack { background: var(--white); }
+    .stack-row { display: flex; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .stack-chip {
+      display: flex; align-items: center; gap: 9px;
+      background: var(--bg); border: 1px solid var(--gray100); border-radius: 50px;
+      padding: 11px 22px; font-size: 14px; font-weight: 600; color: var(--navy);
+      box-shadow: var(--shadow); transition: all 0.2s;
+    }
+    .stack-chip:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: var(--blue); }
+    .stack-chip span { font-size: 20px; }
+
+    /* Contact */
+    .contact { background: linear-gradient(140deg, #062742 0%, #0F3460 100%); color: white; padding: 76px 0; }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+    .contact h2 { font-size: 34px; font-weight: 800; margin-bottom: 14px; }
+    .contact-sub { color: rgba(255,255,255,0.7); font-size: 16px; line-height: 1.7; margin-bottom: 28px; }
+    .contact-info { display: flex; flex-direction: column; gap: 14px; }
+    .contact-item { display: flex; align-items: center; gap: 12px; color: rgba(255,255,255,0.82); font-size: 15px; }
+    .c-icon { width: 38px; height: 38px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+
+    .contact-form { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; padding: 32px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.75); margin-bottom: 7px; }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 8px; padding: 12px 15px; color: white; font-size: 14px; font-family: inherit;
+      outline: none; transition: border-color 0.2s; direction: inherit;
+    }
+    .form-group input::placeholder, .form-group textarea::placeholder { color: rgba(255,255,255,0.3); }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--accent); }
+    .form-group textarea { height: 100px; resize: vertical; }
+    .form-group select option { background: #0F2849; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .btn-submit {
+      width: 100%; background: var(--blue); color: white; border: none;
+      padding: 14px; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: all 0.2s; margin-top: 4px;
+    }
+    .btn-submit:hover { background: #005A9E; transform: translateY(-1px); }
+    .form-success { text-align: center; padding: 16px; color: #34D399; font-weight: 600; font-size: 14px; display: none; }
+
+    footer { background: var(--dark); color: rgba(255,255,255,0.45); padding: 24px 0; text-align: center; font-size: 13px; }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .hero-grid, .contact-grid { grid-template-columns: 1fr; gap: 36px; }
+      .hero-visual { display: none; }
+      .stats-grid { grid-template-columns: repeat(2,1fr); }
+      .services-grid, .why-grid { grid-template-columns: 1fr; }
+      .clients-grid { grid-template-columns: repeat(3,1fr); }
+    }
+    @media (max-width: 600px) {
+      .hero { padding: 52px 0; }
+      .section { padding: 52px 0; }
+      .nav-links { display: none; }
+      .clients-grid { grid-template-columns: repeat(2,1fr); }
+      .form-row { grid-template-columns: 1fr; }
+      .hero-btns { flex-direction: column; }
+    }
+
+    .bg-blue   { background: #EBF5FF; } .bg-cyan { background: #E0F7FF; }
+    .bg-purple { background: #F3F0FF; } .bg-green { background: #EDFCF4; } .bg-orange { background: #FFF4E6; }
+    .c-blue { color: #0078D4; } .c-cyan { color: #0096C7; }
+    .c-purple { color: #6929C4; } .c-green { color: #198038; } .c-orange { color: #D04A02; }
+  </style>
+</head>
+<body>
+
+<!-- Lang bar -->
+<div class="lang-bar">
+  <div class="container">
+    <button class="lang-btn active" onclick="setLang('he')" id="btn-he">עברית</button>
+    <button class="lang-btn" onclick="setLang('en')" id="btn-en">English</button>
+  </div>
+</div>
+
+<!-- Nav -->
+<nav>
+  <div class="container">
+    <div class="nav-inner">
+      <a href="#" class="logo">
+        <div class="logo-icon">
+          <div class="ms-grid">
+            <span style="background:#fff;"></span><span style="background:rgba(255,255,255,0.6);"></span>
+            <span style="background:rgba(255,255,255,0.6);"></span><span style="background:#fff;"></span>
+          </div>
+        </div>
+        <span class="logo-text">CRM <em>Integration</em></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#services" data-he="שירותים" data-en="Services">שירותים</a></li>
+        <li><a href="#clients" data-he="לקוחות" data-en="Clients">לקוחות</a></li>
+        <li><a href="#stack" data-he="טכנולוגיה" data-en="Technology">טכנולוגיה</a></li>
+        <li><a href="#contact" class="nav-cta" data-he="צור קשר" data-en="Contact Us">צור קשר</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="ms-badge">
+          🏆 <span data-he="Microsoft Dynamics 365 — מומחים מוסמכים" data-en="Microsoft Dynamics 365 — Certified Experts">Microsoft Dynamics 365 — מומחים מוסמכים</span>
+        </div>
+        <h1 data-he="מומחי <span class='hl'>Dynamics 365</span><br/>לעסקים ישראלים" data-en="<span class='hl'>Dynamics 365</span><br/>Experts for Israeli Businesses">
+          מומחי <span class="hl">Dynamics 365</span><br/>לעסקים ישראלים
+        </h1>
+        <p data-he="הטמעה, אינטגרציות, פיתוח מותאם ואוטומציות על בסיס Microsoft Dynamics 365 ו-Power Platform. ניסיון עם ארגונים מובילים בישראל." data-en="Implementation, integrations, custom development and automation on Microsoft Dynamics 365 and Power Platform. Experience with leading Israeli organizations.">
+          הטמעה, אינטגרציות, פיתוח מותאם ואוטומציות על בסיס Microsoft Dynamics 365 ו-Power Platform. ניסיון עם ארגונים מובילים בישראל.
+        </p>
+        <div class="hero-btns">
+          <a href="#contact" class="btn-primary">
+            <span data-he="דברו איתנו" data-en="Talk to Us">דברו איתנו</span> →
+          </a>
+          <a href="#services" class="btn-outline" data-he="השירותים שלנו" data-en="Our Services">השירותים שלנו</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="d365-card">
+          <div class="d365-title" data-he="מודולי Dynamics 365" data-en="Dynamics 365 Modules">מודולי Dynamics 365</div>
+          <div class="d365-module">
+            <span class="mod-icon">💼</span>
+            <div class="mod-info"><strong>D365 Sales</strong><span data-he="ניהול מכירות ולידים" data-en="Sales & Leads Management">ניהול מכירות ולידים</span></div>
+            <span class="mod-dot"></span>
+          </div>
+          <div class="d365-module">
+            <span class="mod-icon">🎧</span>
+            <div class="mod-info"><strong>Customer Service</strong><span data-he="שירות ותמיכת לקוחות" data-en="Customer Support">שירות ותמיכת לקוחות</span></div>
+            <span class="mod-dot"></span>
+          </div>
+          <div class="d365-module">
+            <span class="mod-icon">🔧</span>
+            <div class="mod-info"><strong>Field Service</strong><span data-he="ניהול שירות שטח" data-en="Field Service Management">ניהול שירות שטח</span></div>
+            <span class="mod-dot"></span>
+          </div>
+          <div class="d365-module">
+            <span class="mod-icon">⚡</span>
+            <div class="mod-info"><strong>Power Automate</strong><span data-he="אוטומציות ותהליכים" data-en="Automation & Workflows">אוטומציות ותהליכים</span></div>
+            <span class="mod-dot"></span>
+          </div>
+          <div class="d365-module">
+            <span class="mod-icon">📊</span>
+            <div class="mod-info"><strong>Power BI</strong><span data-he="דשבורדים ודוחות" data-en="Dashboards & Reports">דשבורדים ודוחות</span></div>
+            <span class="mod-dot"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<div class="stats">
+  <div class="container">
+    <div class="stats-grid">
+      <div>
+        <div class="stat-num">13<em>+</em></div>
+        <div class="stat-label" data-he="שנות ניסיון — מ-2012" data-en="Years of Experience — Since 2012">שנות ניסיון — מ-2012</div>
+      </div>
+      <div>
+        <div class="stat-num">50<em>+</em></div>
+        <div class="stat-label" data-he="פרויקטים הושלמו" data-en="Projects Completed">פרויקטים הושלמו</div>
+      </div>
+      <div>
+        <div class="stat-num">5</div>
+        <div class="stat-label" data-he="ארגונים מובילים" data-en="Leading Organizations">ארגונים מובילים</div>
+      </div>
+      <div>
+        <div class="stat-num">100<em>%</em></div>
+        <div class="stat-label" data-he="פתרונות על בסיס Microsoft" data-en="Microsoft-Based Solutions">פתרונות על בסיס Microsoft</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Services -->
+<section class="section services" id="services">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag" data-he="השירותים שלנו" data-en="Our Services">השירותים שלנו</div>
+      <h2 data-he="כל מה שצריך ב-Dynamics 365" data-en="Everything You Need in Dynamics 365">כל מה שצריך ב-Dynamics 365</h2>
+      <p data-he="מהטמעה ראשונית ועד לפיתוח מורכב — עובדים אך ורק עם Microsoft Dynamics 365 ו-Power Platform" data-en="From initial implementation to complex development — working exclusively with Microsoft Dynamics 365 and Power Platform">מהטמעה ראשונית ועד לפיתוח מורכב — עובדים אך ורק עם Microsoft Dynamics 365 ו-Power Platform</p>
+    </div>
+    <div class="services-grid">
+
+      <div class="service-card">
+        <div class="service-icon bg-blue c-blue">🚀</div>
+        <h3 data-he="הטמעת Dynamics 365" data-en="Dynamics 365 Implementation">הטמעת Dynamics 365</h3>
+        <p data-he="הטמעה מלאה של Dynamics 365 Sales, Customer Service ו-Field Service — כולל אפיון תהליכים, הגדרה, נתוני היסטוריה והכשרת משתמשים." data-en="Full implementation of Dynamics 365 Sales, Customer Service and Field Service — including process design, configuration, data migration and user training.">הטמעה מלאה של Dynamics 365 Sales, Customer Service ו-Field Service — כולל אפיון תהליכים, הגדרה, נתוני היסטוריה והכשרת משתמשים.</p>
+        <div class="service-tags">
+          <span class="tag tag-blue">D365 Sales</span>
+          <span class="tag tag-blue">Customer Service</span>
+          <span class="tag tag-blue">Field Service</span>
+        </div>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon bg-cyan c-cyan">🔗</div>
+        <h3 data-he="אינטגרציות ומחברים" data-en="Integrations & Connectors">אינטגרציות ומחברים</h3>
+        <p data-he="חיבור Dynamics 365 למערכות ERP, אתרים, חנויות, מערכות טלפוניה, מערכות רפואיות ועוד — דרך API, Dataverse ו-Power Automate." data-en="Connecting Dynamics 365 to ERP systems, websites, stores, telephony, medical systems and more — via API, Dataverse and Power Automate.">חיבור Dynamics 365 למערכות ERP, אתרים, חנויות, מערכות טלפוניה, ומערכות ייחודיות — דרך API, Dataverse ו-Power Automate.</p>
+        <div class="service-tags">
+          <span class="tag tag-blue">Dataverse API</span>
+          <span class="tag tag-blue">Power Automate</span>
+          <span class="tag tag-blue">Azure Logic Apps</span>
+        </div>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon bg-purple c-purple">⚙️</div>
+        <h3 data-he="פיתוח מותאם אישית" data-en="Custom Development">פיתוח מותאם אישית</h3>
+        <p data-he="פיתוח Plugins, PCF Controls, Power Apps מותאמים, JavaScript ו-Web Resources — כשהגדרות הסטנדרטיות לא מספיקות." data-en="Developing Plugins, PCF Controls, custom Power Apps, JavaScript and Web Resources — when standard configurations aren't enough.">פיתוח Plugins, PCF Controls, Power Apps מותאמים, JavaScript ו-Web Resources — כשהגדרות הסטנדרטיות לא מספיקות.</p>
+        <div class="service-tags">
+          <span class="tag tag-blue">Plugins C#</span>
+          <span class="tag tag-blue">PCF Controls</span>
+          <span class="tag tag-blue">Power Apps</span>
+          <span class="tag tag-blue">JavaScript</span>
+        </div>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon bg-orange c-orange">📊</div>
+        <h3 data-he="ייעוץ, אפיון ו-Power BI" data-en="Consulting, Design & Power BI">ייעוץ, אפיון ו-Power BI</h3>
+        <p data-he="מיפוי תהליכים עסקיים, אפיון פונקציונלי ל-Dynamics 365, בניית דוחות ו-Dashboards ב-Power BI ואמת מידה לבחינת ROI." data-en="Business process mapping, functional design for Dynamics 365, building Power BI reports and dashboards and ROI measurement frameworks.">מיפוי תהליכים, אפיון פונקציונלי, בניית דוחות ו-Dashboards ב-Power BI ואמת מידה לבחינת ROI.</p>
+        <div class="service-tags">
+          <span class="tag tag-blue">Power BI</span>
+          <span class="tag tag-blue">Power Platform</span>
+          <span class="tag tag-blue" data-he="אפיון פונקציונלי" data-en="Functional Design">אפיון פונקציונלי</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Clients -->
+<section class="section clients" id="clients">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag" data-he="לקוחות ופרויקטים" data-en="Clients & Projects">לקוחות ופרויקטים</div>
+      <h2 data-he="ארגונים שעבדנו איתם" data-en="Organizations We've Worked With">ארגונים שעבדנו איתם</h2>
+      <p data-he="ניסיון עם ארגונים מובילים מענפים שונים בישראל" data-en="Experience with leading organizations across different industries in Israel">ניסיון עם ארגונים מובילים מענפים שונים בישראל</p>
+    </div>
+
+    <div class="clients-grid">
+      <div class="client-card">
+        <span class="client-icon">🚗</span>
+        <div class="client-name">אלדן</div>
+        <div class="client-type" data-he="השכרת רכב" data-en="Car Rental">השכרת רכב</div>
+      </div>
+      <div class="client-card">
+        <span class="client-icon">🚚</span>
+        <div class="client-name">נובולוג</div>
+        <div class="client-type" data-he="לוגיסטיקה ושילוח" data-en="Logistics & Shipping">לוגיסטיקה ושילוח</div>
+      </div>
+      <div class="client-card">
+        <span class="client-icon">💧</span>
+        <div class="client-name">ביוול</div>
+        <div class="client-type" data-he="טכנולוגיות מים" data-en="Water Technologies">טכנולוגיות מים</div>
+      </div>
+      <div class="client-card">
+        <span class="client-icon">💻</span>
+        <div class="client-name">גב מערכות</div>
+        <div class="client-type" data-he="מערכות מידע" data-en="IT Systems">מערכות מידע</div>
+      </div>
+      <div class="client-card">
+        <span class="client-icon">🏥</span>
+        <div class="client-name" style="font-size:12px;">קופ"ח מאוחדת</div>
+        <div class="client-type" data-he="שירותי בריאות" data-en="Healthcare">שירותי בריאות</div>
+      </div>
+    </div>
+
+    <div class="subcontractor-note">
+      <span class="icon">🤝</span>
+      <p data-he="<strong>עבודה כקבלן משנה:</strong> אנחנו עובדים גם כקבלן משנה עם שותפי Microsoft ואינטגרטורים מובילים בישראל. אם אתה מחפש מומחה Dynamics 365 לחיזוק הצוות שלך בפרויקט — נשמח לשמוע." data-en="<strong>Subcontractor Work:</strong> We also work as subcontractors with Microsoft partners and leading integrators in Israel. If you're looking for a Dynamics 365 expert to strengthen your project team — we'd love to hear from you."><strong>עבודה כקבלן משנה:</strong> אנחנו עובדים גם כקבלן משנה עם שותפי Microsoft ואינטגרטורים מובילים בישראל. אם אתה מחפש מומחה Dynamics 365 לחיזוק הצוות שלך בפרויקט — נשמח לשמוע.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Why us -->
+<section class="section why">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag" data-he="למה אנחנו" data-en="Why Us">למה אנחנו</div>
+      <h2 data-he="מומחיות מוכחת ב-Dynamics 365" data-en="Proven Dynamics 365 Expertise">מומחיות מוכחת ב-Dynamics 365</h2>
+    </div>
+    <div class="why-grid">
+      <div class="why-item">
+        <div class="why-icon bg-blue">🎯</div>
+        <h3 data-he="התמחות ייחודית" data-en="Unique Specialization">התמחות ייחודית</h3>
+        <p data-he="100% Microsoft Dynamics 365 — לא מפיצים קשב בין עשרות פלטפורמות. עומק מקצועי אמיתי." data-en="100% Microsoft Dynamics 365 — not spreading attention across dozens of platforms. Real professional depth.">100% Microsoft Dynamics 365 — לא מפיצים קשב בין עשרות פלטפורמות. עומק מקצועי אמיתי.</p>
+      </div>
+      <div class="why-item">
+        <div class="why-icon bg-green">🏗️</div>
+        <h3 data-he="ניסיון עם ארגונים גדולים" data-en="Enterprise Experience">ניסיון עם ארגונים גדולים</h3>
+        <p data-he="פרויקטים מורכבים אצל גופים כמו קופת חולים מאוחדת ואלדן — יודעים לעבוד עם דרישות ארגוניות מחמירות." data-en="Complex projects at organizations like Meuhedet and Eldan — knowing how to work with strict enterprise requirements.">פרויקטים מורכבים אצל גופים גדולים — יודעים לעבוד עם דרישות ארגוניות מחמירות.</p>
+      </div>
+      <div class="why-item">
+        <div class="why-icon bg-purple">⚡</div>
+        <h3 data-he="גמישות — ישיר או קבלן משנה" data-en="Flexibility — Direct or Subcontractor">גמישות — ישיר או קבלן משנה</h3>
+        <p data-he="עובדים ישירות מול לקוחות קצה, וגם כקבלן משנה עם חברות הטמעה — הגמישות הנכונה לכל פרויקט." data-en="Work directly with end clients, and also as subcontractor with implementation firms — the right flexibility for every project.">עובדים ישירות מול לקוחות קצה, וגם כקבלן משנה — הגמישות הנכונה לכל פרויקט.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Tech stack -->
+<section class="section stack" id="stack">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag" data-he="הטכנולוגיה שלנו" data-en="Our Technology">הטכנולוגיה שלנו</div>
+      <h2 data-he="Microsoft Stack מלא" data-en="Full Microsoft Stack">Microsoft Stack מלא</h2>
+    </div>
+    <div class="stack-row">
+      <div class="stack-chip"><span>🟦</span> Dynamics 365</div>
+      <div class="stack-chip"><span>⚡</span> Power Automate</div>
+      <div class="stack-chip"><span>📱</span> Power Apps</div>
+      <div class="stack-chip"><span>📊</span> Power BI</div>
+      <div class="stack-chip"><span>🗄️</span> Dataverse</div>
+      <div class="stack-chip"><span>☁️</span> Azure</div>
+      <div class="stack-chip"><span>🔷</span> Azure Logic Apps</div>
+      <div class="stack-chip"><span>🔑</span> Azure AD</div>
+      <div class="stack-chip"><span>📧</span> Microsoft 365</div>
+      <div class="stack-chip"><span>⚙️</span> C# / .NET</div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section class="contact" id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div>
+        <h2 data-he="בואו נדבר" data-en="Let's Talk">בואו נדבר</h2>
+        <p class="contact-sub" data-he="צריך מומחה Dynamics 365? מחפש קבלן משנה לפרויקט? שלח פרטים ונחזור אליך תוך יום עסקים." data-en="Need a Dynamics 365 expert? Looking for a subcontractor for a project? Send your details and we'll get back to you within one business day.">צריך מומחה Dynamics 365? מחפש קבלן משנה לפרויקט? שלח פרטים ונחזור אליך תוך יום עסקים.</p>
+        <div class="contact-info">
+          <div class="contact-item">
+            <div class="c-icon">📧</div>
+            <span>info@crm-integration.co.il</span>
+          </div>
+          <div class="contact-item">
+            <div class="c-icon">🌐</div>
+            <span>crm-integration.co.il</span>
+          </div>
+          <div class="contact-item">
+            <div class="c-icon">🇮🇱</div>
+            <span data-he="ישראל" data-en="Israel">ישראל</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="contact-form">
+          <form onsubmit="submitForm(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label data-he="שם" data-en="Name">שם</label>
+                <input type="text" placeholder="ישראל ישראלי" required />
+              </div>
+              <div class="form-group">
+                <label data-he="טלפון" data-en="Phone">טלפון</label>
+                <input type="tel" placeholder="050-0000000" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label data-he="אימייל" data-en="Email">אימייל</label>
+              <input type="email" placeholder="email@company.co.il" required />
+            </div>
+            <div class="form-group">
+              <label data-he="סוג פנייה" data-en="Inquiry Type">סוג פנייה</label>
+              <select>
+                <option data-he="בחר..." data-en="Select...">בחר...</option>
+                <option data-he="הטמעת Dynamics 365" data-en="Dynamics 365 Implementation">הטמעת Dynamics 365</option>
+                <option data-he="אינטגרציות ופיתוח" data-en="Integrations & Development">אינטגרציות ופיתוח</option>
+                <option data-he="קבלן משנה לפרויקט" data-en="Subcontractor for Project">קבלן משנה לפרויקט</option>
+                <option data-he="ייעוץ ראשוני" data-en="Initial Consulting">ייעוץ ראשוני</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label data-he="פרטי הפרויקט" data-en="Project Details">פרטי הפרויקט</label>
+              <textarea placeholder="ספר לנו על הפרויקט..."></textarea>
+            </div>
+            <button type="submit" class="btn-submit" data-he="שלח פנייה →" data-en="Send Message →">שלח פנייה →</button>
+            <div class="form-success" id="formSuccess" data-he="✅ קיבלנו! נחזור אליך בקרוב." data-en="✅ Got it! We'll be in touch soon.">✅ קיבלנו! נחזור אליך בקרוב.</div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>© 2012–2025 CRM Integration &nbsp;|&nbsp; <span data-he="כל הזכויות שמורות" data-en="All rights reserved">כל הזכויות שמורות</span> &nbsp;|&nbsp; <span data-he="מומחי Microsoft Dynamics 365 בישראל" data-en="Microsoft Dynamics 365 Experts in Israel">מומחי Microsoft Dynamics 365 בישראל</span></p>
+  </div>
+</footer>
+
+<script>
+  function setLang(lang) {
+    const isHe = lang === 'he';
+    document.documentElement.lang = lang;
+    document.documentElement.dir = isHe ? 'rtl' : 'ltr';
+    document.body.style.direction = isHe ? 'rtl' : 'ltr';
+    document.body.style.textAlign = isHe ? 'right' : 'left';
+    document.getElementById('btn-he').classList.toggle('active', isHe);
+    document.getElementById('btn-en').classList.toggle('active', !isHe);
+    document.querySelectorAll('[data-' + lang + ']').forEach(el => {
+      const val = el.getAttribute('data-' + lang);
+      if (!val) return;
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+        el.placeholder = val;
+      } else if (el.tagName === 'OPTION') {
+        el.textContent = val;
+      } else {
+        el.innerHTML = val;
+      }
+    });
+  }
+
+  function submitForm(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('.btn-submit');
+    btn.disabled = true;
+    setTimeout(() => {
+      document.getElementById('formSuccess').style.display = 'block';
+      e.target.reset();
+      btn.disabled = false;
+    }, 700);
+  }
+
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const t = document.querySelector(a.getAttribute('href'));
+      if (t) { e.preventDefault(); window.scrollTo({ top: t.offsetTop - 65, behavior: 'smooth' }); }
+    });
+  });
+</script>
+</body>
+</html>
