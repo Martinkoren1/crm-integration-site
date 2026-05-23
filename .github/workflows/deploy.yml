@@ -1,0 +1,27 @@
+name: Deploy to freehostia via FTP
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ftp.freehostia.com
+          username: markor16
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /www/crm-integration.co.il/
+          local-dir: ./
+          exclude: |
+            **/.git*
+            **/.git*/**
+            .github/**
+            README.md
